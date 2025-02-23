@@ -26,7 +26,7 @@ jobs:
     - name: prepare
       run: |
            lscpu
-           sudo apt update && sudo apt install cmake g++ libgtest-dev # installing gtest
+           sudo apt update && sudo apt install git cmake g++ libgtest-dev # installing gtest
            cd /usr/src/googletest
            sudo cmake .
            sudo make
