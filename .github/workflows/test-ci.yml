@@ -35,7 +35,7 @@ jobs:
            pip install pygments
     - name: build
       run: |
-         git clone git@github.com:IRPSystems/Dynamic_Core.git Dynamic_Core
+         git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com:IRPSystems/Dynamic_Core.git Dynamic_Core
          cd Dynamic_Core && mkdir SRC
          cppcheck --enable=all --xml --xml-version=2 --library=googletest . 2>report-src.xml
          ../htmlreport --source-dir=. --title=Dynamic_Core-Report --file=report-src.xml --report-dir=SRC_RPT
