@@ -26,6 +26,7 @@ jobs:
     - name: prepare
       run: |
            lscpu
+           free -m
            sudo apt update && sudo apt install git cmake g++ libgtest-dev # installing gtest
            cd /usr/src/googletest
            sudo cmake .
@@ -35,7 +36,7 @@ jobs:
            pip install pygments
     - name: cppcheck
       run: |
-         GIT_TRACE=1 GIT_CURL_VERBOSE=1 git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/IRPSystems/Dynamic_Core.git Dynamic_Core
+         GIT_TRACE=1 GIT_CURL_VERBOSE=1 git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/IRPSystems/Dynamic_Project.git Dynamic_Core
          cd Dynamic_Core && mkdir SRC
          cppcheck --enable=all --xml --xml-version=2 --library=googletest . 2>report-src.xml
          ../htmlreport --source-dir=. --title=Dynamic_Core-Report --file=report-src.xml --report-dir=SRC_RPT
