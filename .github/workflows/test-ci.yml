@@ -9,7 +9,7 @@ on:
   workflow_dispatch: null
 jobs:
   Code-Check:
-    runs-on: [IRP-Runner] 
+    runs-on: [ IRP-GitHub-Runner1] 
     steps:
       - uses: actions/checkout@v4
       - name: prepare
