@@ -9,7 +9,7 @@ on:
   workflow_dispatch: null
 jobs:
   Code-Check:
-    runs-on: [ self-hosted , local-runner ] 
+    runs-on: [ local-runner ] 
     steps:
       - uses: actions/checkout@v4
       - name: prepare
