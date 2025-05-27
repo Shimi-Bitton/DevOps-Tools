@@ -1,10 +1,9 @@
 ####################################################################
 #
 # Those files are automatically assigned approvers/reviewers for PR 
-#
+# 
 ####################################################################
 #
 test/param_defaults_All.json      @Shimi-Bitton
 test/param_defaults.json          @Shimi-Bitton
 test/param_defaults_All           @Shimi-Bitton
-test/TrueDrive Manager - JSON Generator.xlsm  @Shimi-Bitton
