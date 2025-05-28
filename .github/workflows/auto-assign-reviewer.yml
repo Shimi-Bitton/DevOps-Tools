@@ -1,23 +1,26 @@
-name: Auto Assign Reviewer on File Change
+name: Auto Assign Reviewer on Specific File Changes
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, reopened, synchronize]
 
 jobs:
   assign-reviewer:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Check if monitored files changed
-        id: check
+      - name: Get changed files from PR
+        id: filecheck
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BASE=${{ github.event.pull_request.base.ref }}
-          git fetch origin $BASE
-          CHANGED=$(git diff --name-only origin/$BASE...${{ github.sha }} || echo "")
-          echo "$CHANGED"
+          FILES=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files \
+            | jq -r '.[].filename')
+
+          echo "Changed files:"
+          echo "$FILES"
+
           MATCH=false
 
           while read -r FILE; do
@@ -25,19 +28,20 @@ jobs:
               "test/param_defaults_All.json" | \
               "test/param_defaults.json" | \
               "Space Folder/Space file name - JSON.txt")
-                MATCH=true
+               MATCH=true
                 break
                 ;;
             esac
-          done <<< "$CHANGED"
+          done <<< "$FILES"
 
           echo "file_changed=$MATCH" >> $GITHUB_OUTPUT
 
       - name: Assign reviewer via GitHub API
-        if: steps.check.outputs.file_changed == 'true'
+        if: steps.filecheck.outputs.file_changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Assigning reviewer Shimi..."
           curl -s -X POST \
             -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
