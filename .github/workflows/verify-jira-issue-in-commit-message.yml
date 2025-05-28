@@ -1,8 +1,12 @@
-name: Commit Message Validation - Verify that Jira Issue Key Exist in Commit Message
+name: Commit Message Validation
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+      - master
 
 jobs:
   check_commit_messages:
@@ -20,10 +24,21 @@ jobs:
           # Regex pattern to match Jira issue keys
           jira_key_regex="($jira_keys[0-9]+)"
           
-          # Loop through commits in the PR
-          for commit in $(git log --format="%s" origin/main..HEAD); do
-            if [[ ! "$commit" =~ $jira_key_regex ]]; then
-              echo "Error: Commit message '$commit' is missing a valid Jira issue key."
-              exit 1
-            fi
-          done
+          # Loop through commits
+          if [[ $GITHUB_EVENT_NAME == "push" ]]; then
+            # If it's a push event (to main/master), check all commits in the push
+            for commit in $(git log --format="%s" HEAD^1..HEAD); do
+              if [[ ! "$commit" =~ $jira_key_regex ]]; then
+                echo "Error: Commit message '$commit' is missing a valid Jira issue key."
+                exit 1
+              fi
+            done
+          else
+            # For pull requests, check the commits in the PR
+            for commit in $(git log --format="%s" origin/main..HEAD); do
+              if [[ ! "$commit" =~ $jira_key_regex ]]; then
+                echo "Error: Commit message '$commit' is missing a valid Jira issue key."
+                exit 1
+              fi
+            done
+          fi
