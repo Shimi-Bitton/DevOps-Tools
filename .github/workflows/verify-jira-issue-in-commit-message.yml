@@ -1,4 +1,4 @@
-name: Commit Message Validation - Check for Jira Issue Key in Commit Message 
+name: Commit Message Validation - Check for Jira Issue Key in Commit Message
 
 on:
   pull_request:
