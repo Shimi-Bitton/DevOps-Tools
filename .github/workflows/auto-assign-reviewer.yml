@@ -34,8 +34,8 @@ jobs:
 
           echo "file_changed=$MATCH" >> $GITHUB_OUTPUT
 
-      - name: Assign reviewer
+      - name: Add reviewer if files changed
         if: steps.check.outputs.file_changed == 'true'
-        uses: madrapps/add-reviewers@v1
+        uses: docker://ghcr.io/peter-evans/add-reviewers:v3
         with:
           reviewers: Shimi-Bitton
