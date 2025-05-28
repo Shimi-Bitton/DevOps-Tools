@@ -1,0 +1,41 @@
+name: Auto Assign Reviewer on File Change
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  assign-reviewer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check if monitored files changed
+        id: check
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.sha }})
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          MATCH=false
+
+          while read -r FILE; do
+            case "$FILE" in
+              "test/param_defaults_All.json" | \
+              "test/param_defaults.json" | \
+              "Space Folder/Space file name - JSON.txt")
+                MATCH=true
+                break
+                ;;
+            esac
+          done <<< "$CHANGED_FILES"
+
+          echo "file_changed=$MATCH" >> $GITHUB_OUTPUT
+
+      - name: Assign reviewer
+        if: steps.check.outputs.file_changed == 'true'
+        uses: peter-evans/add-reviewers@v3
+        with:
+          reviewers: Shimi-Bitton
