@@ -36,6 +36,6 @@ jobs:
 
       - name: Assign reviewer
         if: steps.check.outputs.file_changed == 'true'
-        uses: peter-evans/add-reviewers@v3.0.0
+        uses: madrapps/add-reviewers@v1
         with:
           reviewers: Shimi-Bitton
