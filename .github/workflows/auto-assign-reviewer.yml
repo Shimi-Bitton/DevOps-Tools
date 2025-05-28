@@ -34,8 +34,13 @@ jobs:
 
           echo "file_changed=$MATCH" >> $GITHUB_OUTPUT
 
-      - name: Add reviewer if files changed
+      - name: Assign reviewer via GitHub API
         if: steps.check.outputs.file_changed == 'true'
-        uses: docker://ghcr.io/peter-evans/add-reviewers:v3
-        with:
-          reviewers: Shimi-Bitton
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers \
+            -d '{"reviewers": ["Shimi-Bitton"]}'
