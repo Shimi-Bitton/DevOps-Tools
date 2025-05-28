@@ -1,0 +1,29 @@
+name: Commit Message Validation - Verify that Jira Issue Key Exist in Commit Message
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check_commit_messages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check commit message for Jira issue key
+        run: |
+          # Define Jira project keys
+          jira_keys="DO-|SW-|CTRL-|ALGO-|EMBD-|TG4-|TG5-|D1-|1D-"
+          
+          # Regex pattern to match Jira issue keys
+          jira_key_regex="($jira_keys[0-9]+)"
+          
+          # Loop through commits in the PR
+          for commit in $(git log --format="%s" origin/main..HEAD); do
+            if [[ ! "$commit" =~ $jira_key_regex ]]; then
+              echo "Error: Commit message '$commit' is missing a valid Jira issue key."
+              exit 1
+            fi
+          done
