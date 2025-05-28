@@ -14,11 +14,10 @@ jobs:
       - name: Check if monitored files changed
         id: check
         run: |
-          git fetch origin ${{ github.base_ref }}
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.sha }})
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
+          BASE=${{ github.event.pull_request.base.ref }}
+          git fetch origin $BASE
+          CHANGED=$(git diff --name-only origin/$BASE...${{ github.sha }} || echo "")
+          echo "$CHANGED"
           MATCH=false
 
           while read -r FILE; do
@@ -30,7 +29,7 @@ jobs:
                 break
                 ;;
             esac
-          done <<< "$CHANGED_FILES"
+          done <<< "$CHANGED"
 
           echo "file_changed=$MATCH" >> $GITHUB_OUTPUT
 
